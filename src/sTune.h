@@ -2,8 +2,6 @@
 #ifndef S_TUNE_H_
 #define S_TUNE_H_
 
-const char* STUNE_LOG_TAG = "sTune";
-
 class sTune {  // Inflection Point Autotuner
 
   public:
