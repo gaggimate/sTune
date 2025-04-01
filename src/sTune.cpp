@@ -99,7 +99,7 @@ uint8_t sTune::Run() {
         sTune::Reset();
         sampleCount = _samples + 1;
         eStopAbort = 1;
-        ESP_LOGI(F("ABORT: pvInst > eStop"));
+        ESP_LOGI("sTune", "ABORT: pvInst > eStop");
         break;
       }
       if (settleElapsed >= _settlePeriodUs) { // if settling period has expired
@@ -216,7 +216,7 @@ uint8_t sTune::Run() {
           usPrev = usNow;
           pvInst = *_input;
           if (_serialMode == printALL || _serialMode == printDEBUG) {
-            ESP_LOGI(F("sec: %.2f  out: %.2f  pv: %.2f  settling  ⤳⤳"), (float)((_settlePeriodUs - settleElapsed) * 0.000001f), *_output, pvInst);
+            ESP_LOGI("sTune", "sec: %.2f  out: %.2f  pv: %.2f  settling  ⤳⤳", (float)((_settlePeriodUs - settleElapsed) * 0.000001f), *_output, pvInst);
           }
           _tunerStatus = sample;
           return sample;
@@ -234,7 +234,7 @@ uint8_t sTune::Run() {
         sTune::Reset();
         sampleCount = _samples + 1;
         eStopAbort = 1;
-        ESP_LOGI(F("ABORT: pvInst > eStop"));
+        ESP_LOGI("sTune", "ABORT: pvInst > eStop");
       }
       _tunerStatus = timerPid;
       return timerPid;
@@ -279,7 +279,7 @@ void sTune::printPidTuner(uint8_t everyNth) {
   if (sampleCount < _samples) {
     if (plotCount == 0 || plotCount >= everyNth) {
       plotCount = 1;
-      ESP_LOGI(F("%.4f, %.2f, %.2f"), us * 0.000001f, *_output, pvAvg);
+      ESP_LOGI("sTune", "%.4f, %.2f, %.2f", us * 0.000001f, *_output, pvAvg);
     } else plotCount++;
   }
 }
@@ -287,72 +287,72 @@ void sTune::printPidTuner(uint8_t everyNth) {
 void sTune::plotter(float input, float output, float setpoint, float outputScale, uint8_t everyNth) {
   if (plotCount >= everyNth) {
     plotCount = 1;
-    ESP_LOGI(F("Setpoint: %.2f, Input: %.2f, Output: %.2f"), setpoint, input, output * outputScale);
+    ESP_LOGI("sTune", "Setpoint: %.2f, Input: %.2f, Output: %.2f", setpoint, input, output * outputScale);
   } else plotCount++;
 }
 
 void sTune::printTestRun() {
   if (sampleCount < _samples) {
     if (_serialMode == printALL || _serialMode == printDEBUG) {
-      ESP_LOGI(F(" sec: %.2f  out: %.2f  pv: %.2f"), us * 0.000001f, *_output, pvAvg);
+      ESP_LOGI("sTune", " sec: %.2f  out: %.2f  pv: %.2f", us * 0.000001f, *_output, pvAvg);
       if (_serialMode == printDEBUG && (_action == direct5T || _action == reverse5T)) {
-        ESP_LOGI(F(" pvPk: %.2f  pvPkCount: %.2f  ipCount: %.2f"), pvPk, pvPkCount, ipCount);
+        ESP_LOGI("sTune", " pvPk: %.2f  pvPkCount: %.2f  ipCount: %.2f", pvPk, pvPkCount, ipCount);
       }
       if (_serialMode == printDEBUG && (_action == directIP || _action == reverseIP)) {
-        ESP_LOGI(F(" ipCount: %.2f"), pvPk, pvPkCount, ipCount);
+        ESP_LOGI("sTune", " ipCount: %.2f", pvPk, pvPkCount, ipCount);
       }
-      ESP_LOGI(F(" tan: %.3f"), pvTangent);
-      if (pvInst > 0.9f * eStop)                        ESP_LOGI(F("Direction: ⚠"));
-      if (pvTangent - pvTangentPrev > 0 + epsilon)      ESP_LOGI(F("Direction: ↗"));
-      else if (pvTangent - pvTangentPrev < 0 - epsilon) ESP_LOGI(F("Direction: ↘"));
-      else                                              ESP_LOGI(F("Direction: →"));
+      ESP_LOGI("sTune", " tan: %.3f", pvTangent);
+      if (pvInst > 0.9f * eStop)                        ESP_LOGI("sTune", "Direction: ⚠");
+      if (pvTangent - pvTangentPrev > 0 + epsilon)      ESP_LOGI("sTune", "Direction: ↗");
+      else if (pvTangent - pvTangentPrev < 0 - epsilon) ESP_LOGI("sTune", "Direction: ↘");
+      else                                              ESP_LOGI("sTune", "Direction: →");
     }
   }
 }
 
 void sTune::printTunings() {
-  if (_tuningMethod == ZN_PID) ESP_LOGI(F("Tuning Method: ZN_PID"));
-  else if (_tuningMethod == DampedOsc_PID) ESP_LOGI(F("Tuning Method: Damped_PID"));
-  else if (_tuningMethod == NoOvershoot_PID) ESP_LOGI(F("Tuning Method: NoOvershoot_PID"));
-  else if (_tuningMethod == CohenCoon_PID) ESP_LOGI(F("Tuning Method: CohenCoon_PID"));
-  else if (_tuningMethod == Mixed_PID) ESP_LOGI(F("Tuning Method: Mixed_PID"));
-  else if (_tuningMethod == ZN_PI) ESP_LOGI(F("Tuning Method: ZN_PI"));
-  else if (_tuningMethod == DampedOsc_PI) ESP_LOGI(F("Tuning Method: Damped_PI"));
-  else if (_tuningMethod == NoOvershoot_PI) ESP_LOGI(F("Tuning Method: NoOvershoot_PI"));
-  else if (_tuningMethod == CohenCoon_PI) ESP_LOGI(F("Tuning Method: CohenCoon_PI"));
-  else ESP_LOGI(F("Tuning Method: Mixed_PI"));
-  ESP_LOGI(F("Kp: %.3f"), sTune::GetKp());
-  ESP_LOGI(F("Ki: %.3f"), sTune::GetKi());
-  ESP_LOGI(F("Kd: %.3f"), sTune::GetKd());
+  if (_tuningMethod == ZN_PID) ESP_LOGI("sTune", "Tuning Method: ZN_PID");
+  else if (_tuningMethod == DampedOsc_PID) ESP_LOGI("sTune", "Tuning Method: Damped_PID");
+  else if (_tuningMethod == NoOvershoot_PID) ESP_LOGI("sTune", "Tuning Method: NoOvershoot_PID");
+  else if (_tuningMethod == CohenCoon_PID) ESP_LOGI("sTune", "Tuning Method: CohenCoon_PID");
+  else if (_tuningMethod == Mixed_PID) ESP_LOGI("sTune", "Tuning Method: Mixed_PID");
+  else if (_tuningMethod == ZN_PI) ESP_LOGI("sTune", "Tuning Method: ZN_PI");
+  else if (_tuningMethod == DampedOsc_PI) ESP_LOGI("sTune", "Tuning Method: Damped_PI");
+  else if (_tuningMethod == NoOvershoot_PI) ESP_LOGI("sTune", "Tuning Method: NoOvershoot_PI");
+  else if (_tuningMethod == CohenCoon_PI) ESP_LOGI("sTune", "Tuning Method: CohenCoon_PI");
+  else ESP_LOGI("sTune", "Tuning Method: Mixed_PI");
+  ESP_LOGI("sTune", "Kp: %.3f", sTune::GetKp());
+  ESP_LOGI("sTune", "Ki: %.3f", sTune::GetKi());
+  ESP_LOGI("sTune", "Kd: %.3f", sTune::GetKd());
 }
 
 void sTune::printResults() {
   if (_serialMode == printALL || _serialMode == printDEBUG || _serialMode == printSUMMARY) {
-    if (_action == directIP) ESP_LOGI(F("Controller action: directIP"));
-    else if (_action == direct5T) ESP_LOGI(F("Controller action: direct5T"));
-    else if (_action == reverseIP) ESP_LOGI(F("Controller action: reverseIP"));
-    else ESP_LOGI(F("Controller action: reverse5T"));
-    ESP_LOGI(F(" Output Start: %.2f, Output Step: %.2f, Sample Sec: %.4f"), _outputStart, _outputStep, _samplePeriodUs * 0.000001f);
+    if (_action == directIP) ESP_LOGI("sTune", "Controller action: directIP");
+    else if (_action == direct5T) ESP_LOGI("sTune", "Controller action: direct5T");
+    else if (_action == reverseIP) ESP_LOGI("sTune", "Controller action: reverseIP");
+    else ESP_LOGI("sTune", "Controller action: reverse5T");
+    ESP_LOGI("sTune", " Output Start: %.2f, Output Step: %.2f, Sample Sec: %.4f", _outputStart, _outputStep, _samplePeriodUs * 0.000001f);
     if (_serialMode == printDEBUG && (_action == directIP || _action == reverseIP)) {
-      ESP_LOGI(F(" Ip Sec: %.4f, Ip Slope: %.3f %s"), ipUs * 0.000001f, slopeIp, _action == directIP || _action == direct5T ? "↑" : "↓");
-      ESP_LOGI(F(" Ip Pv: %.3f"), pvIp);
+      ESP_LOGI("sTune", " Ip Sec: %.4f, Ip Slope: %.3f %s", ipUs * 0.000001f, slopeIp, _action == directIP || _action == direct5T ? "↑" : "↓");
+      ESP_LOGI("sTune", " Ip Pv: %.3f", pvIp);
     }
-    ESP_LOGI(F(" Pv Start:          %.3f"), pvStart);
-    ESP_LOGI(F(" %s:            %.3f"), _action == directIP || _action == direct5T ? "Pv Max" : "Pv Min", pvMax);
-    ESP_LOGI(F(" Pv Diff:           %.3f"), pvMax - pvStart);
-    ESP_LOGI(F(" Process Gain:      %.3f"), _Ku);
-    ESP_LOGI(F(" Dead Time Sec:     %.3f"), _td);
-    ESP_LOGI(F(" Tau Sec:           %.3f"), _Tu);
+    ESP_LOGI("sTune", " Pv Start:          %.3f", pvStart);
+    ESP_LOGI("sTune", " %s:            %.3f", _action == directIP || _action == direct5T ? "Pv Max" : "Pv Min", pvMax);
+    ESP_LOGI("sTune", " Pv Diff:           %.3f", pvMax - pvStart);
+    ESP_LOGI("sTune", " Process Gain:      %.3f", _Ku);
+    ESP_LOGI("sTune", " Dead Time Sec:     %.3f", _td);
+    ESP_LOGI("sTune", " Tau Sec:           %.3f", _Tu);
 
     // Controllability https://blog.opticontrols.com/wp-content/uploads/2011/06/td-versus-tau.png
     float controllability = _Tu / _td + epsilon;
     if (controllability > 99.9) controllability = 99.9;
-    ESP_LOGI(" Tau/Dead Time:       %.1f (%s to control)", controllability, controllability > 0.25 ? controllability > 0.75 ? "easy" : "average" : "difficult");
+    ESP_LOGI("sTune", " Tau/Dead Time:       %.1f (%s to control)", controllability, controllability > 0.25 ? controllability > 0.75 ? "easy" : "average" : "difficult");
 
     // check “best practice” rule that sample time should be ≥ 10 times per process time constant
     // https://controlguru.com/sample-time-is-a-fundamental-design-and-tuning-specification/
     float sampleTimeCheck = _Tu / (_samplePeriodUs * 0.000001f);
-    ESP_LOGI(F(" Tau/Sample Period: %.1f (%s sample rate)"), sampleTimeCheck, sampleTimeCheck >= 10 ? "good": "low");
+    ESP_LOGI("sTune", " Tau/Sample Period: %.1f (%s sample rate", sampleTimeCheck, sampleTimeCheck >= 10 ? "good": "low");
     sTune::printTunings();
     sampleCount++;
   }
